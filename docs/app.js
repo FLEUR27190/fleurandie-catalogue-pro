@@ -195,10 +195,10 @@ function renderHome(){
       <div class="chips" style="margin-top:14px">${UNIVERS.filter(u=>u.star).map(u=>`<a class="tab star" href="#${u.id}">${icon(u.icon)}${u.label}</a>`).join('')}</div>
     </div>
     <aside class="notes" aria-label="Bon à savoir">
-      <div>${svgi('truck')}<span><b>Livraison palette rapide</b><span>48 h selon départements, en palette, demi-palette ou box. Enlèvement possible au Val-Doré (27).</span></span></div>
       <div>${svgi('tag')}<span><b>Prix en moyenne -20 % inférieurs au marché</b><span>Tarif paysagiste net HT par plante, valable jusqu'au 31 décembre 2026 dans la limite des stocks.</span></span></div>
       <div>${svgi('leaf')}<span><b>Végétaux de qualité supérieure, garantie de croissance</b><span>Qualité producteur. Plantation d'octobre à mars : racines actives, arrosage réduit.</span></span></div>
-      <div>${svgi('ruler')}<span><b>Lire les tailles</b><span>C.8-10 = tronc de 8 à 10 cm de tour (arbre d'environ 2,5 à 3 m). H.150/175 = hauteur totale en cm. Nos pépiniéristes sont là pour vous aider !</span></span></div>
+      <div>${svgi('ruler')}<span><b>Lire les tailles</b><span>C.8-10 = tronc de 8 à 10 cm de tour (arbre d'environ 2,5 à 3 m). H.150/175 = hauteur totale en cm.</span></span></div>
+      <div>${svgi('phone')}<span><b>Nos pépiniéristes sont là pour vous aider !</b><span>Devis confirmé après vérification des disponibilités, conseils de choix et de plantation au 02 32 38 07 51.</span></span></div>
     </aside>
   </section>
   ${['arbres','haies','fruitiers'].map(uid=>`<div class="sec"><h2>${esc(UMAP[uid].label)} <span style="font-weight:400;color:var(--muted);font-size:1rem">· les plus demandés</span></h2><a class="more" href="#${uid}">Tout le rayon ${esc(UMAP[uid].label.toLowerCase())} (${BYU[uid].length}) →</a></div><div class="stars">${STARS[uid].map(s=>starCard(uid,s[0],s[1],s[2])).join('')}</div>`).join('')}
@@ -206,14 +206,14 @@ function renderHome(){
   <div class="stars">${STARS.autres.map(s=>starCard(s[2],s[0],s[1],s[3])).join('')}</div>`;
   main.querySelectorAll('.star').forEach(b=>b.addEventListener('click',()=>go('univers',b.dataset.u,{filter:b.dataset.key})));
 }
-function svgi(k){const d={truck:'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',tag:'<path d="M3 12V3h9l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',leaf:'<path d="M4 20c0-9 6-15 16-16-1 10-7 16-16 16z"/><path d="M4 20c4-5 8-8 12-11"/>',ruler:'<path d="M3 17 17 3l4 4L7 21zM8 12l2 2M11 9l2 2M14 6l2 2"/>'}[k];return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`}
+function svgi(k){const d={phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',tag:'<path d="M3 12V3h9l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',leaf:'<path d="M4 20c0-9 6-15 16-16-1 10-7 16-16 16z"/><path d="M4 20c4-5 8-8 12-11"/>',ruler:'<path d="M3 17 17 3l4 4L7 21zM8 12l2 2M11 9l2 2M14 6l2 2"/>'}[k];return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`}
 
 /* ---------- univers ---------- */
 function renderUnivers(){
   const u=UMAP[state.u]; const all=BYU[u.id];
   const genera=[...new Set(all.map(g=>g.genus))].sort().map(g=>({g,fr:FR[g]||'',n:all.filter(x=>x.genus===g).length}));
   let feat='';
-  if(u.id==='arbres') feat=`<div class="panel"><h3>Choisir un arbre par usage</h3><p class="hint">Un clic filtre le rayon. Les silhouettes indiquent la forme livrée : tige, cépée, ½ tige, pleureur…</p>
+  if(u.id==='arbres') feat=`<div class="panel"><h3>Choisir un arbre par usage</h3><p class="hint">Un clic filtre le rayon. Les silhouettes indiquent la forme de l'arbre : tige, cépée, ½ tige, pleureur…</p>
     <div class="chips" id="usage">${USAGE.map(x=>`<button class="chip" data-k="${x[0]}" aria-pressed="${state.usage===x[0]}">${x[1]}</button>`).join('')}</div>
     <h3 style="margin-top:16px">Repère de taille des tiges</h3>
     <div class="guide">${[['C.6-8','≈ 2 à 2,5 m'],['C.8-10','≈ 2,5 à 3 m'],['C.10-12','≈ 3 à 3,5 m'],['C.12-14','≈ 3,5 à 4 m'],['C.14-16','≈ 4 à 4,5 m'],['C.16-18','≈ 4,5 à 5 m'],['C.18-20','≈ 5 à 5,5 m'],['C.20-25','≈ 5,5 à 6,5 m']].map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div></div>`;
@@ -337,17 +337,17 @@ function renderDrawer(){
   const t=totals();
   $('#dev').innerHTML=`<div class="ov" id="ov"></div><aside class="drawer" role="dialog" aria-label="Mon devis"><header><h2>Mon devis</h2><button class="x" id="dx" aria-label="Fermer">×</button></header>
   <div class="body">
-    <div class="info"><input id="i-soc" placeholder="Votre entreprise *" value="${esc(info.soc||'')}" autocomplete="organization"><input id="i-mail" type="email" placeholder="Votre e-mail *" value="${esc(info.mail||'')}" autocomplete="email"><input id="i-tel" type="tel" placeholder="Votre téléphone" value="${esc(info.tel||'')}" autocomplete="tel"><input id="i-ch" placeholder="Chantier / référence client" value="${esc(info.ch||'')}"><input id="i-wk" placeholder="Semaine de livraison souhaitée" value="${esc(info.wk||'')}"></div><div id="sendstatus"></div>
+    <div class="info"><input id="i-soc" placeholder="Votre entreprise *" value="${esc(info.soc||'')}" autocomplete="organization"><input id="i-mail" type="email" placeholder="Votre e-mail *" value="${esc(info.mail||'')}" autocomplete="email"><input id="i-tel" type="tel" placeholder="Votre téléphone" value="${esc(info.tel||'')}" autocomplete="tel"><input id="i-ch" placeholder="Chantier / référence client" value="${esc(info.ch||'')}"></div><div id="sendstatus"></div>
     ${quote.length?quote.map((q,i)=>`<div class="line"><div><div class="n">${esc(titleCase(q.n))}</div><div class="d">${esc(q.s)} · ${fmt(unit(q.p,q.o,q.q))} HT${q.o?(q.q>=q.o[0]?' <b style="color:var(--sale)">tarif par '+q.o[0]+' appliqué</b>':' · par '+q.o[0]+' : '+fmt(q.o[1])):''}</div></div><div class="ctl"><button data-i="${i}" data-d="-1" aria-label="Moins">−</button><input type="number" min="1" value="${q.q}" data-i="${i}" aria-label="Quantité"><button data-i="${i}" data-d="1" aria-label="Plus">+</button></div><button class="rm" data-rm="${i}">Retirer</button><div class="tot num">${fmt(unit(q.p,q.o,q.q)*q.q)}</div></div>`).join('')
     :`<div class="empty">Votre devis est vide. Dans chaque rayon, ouvrez une plante, choisissez la quantité et cliquez « Ajouter ».</div>`}
     ${quote.length?`<div class="totals"><div><span>Total HT</span><b class="num">${fmt(t.ht)}</b></div><div><span>TVA 10 %</span><span class="num">${fmt(t.tva)}</span></div><div class="ttc"><span>Total TTC</span><span class="num">${fmt(t.ttc)}</span></div></div>
-    <p style="color:var(--muted);font-size:.9rem">Prix HT départ pépinière, hors transport. Envoyez ce devis à <b style="color:var(--green);user-select:all">contact@fleurandie.com</b> ou appelez le <b style="color:var(--green)">02 32 38 07 51</b> : nos pépiniéristes vous le confirment après vérification des disponibilités.</p>
+    <p style="color:var(--muted);font-size:.9rem">Prix HT, par unité. Envoyez ce devis à <b style="color:var(--green);user-select:all">contact@fleurandie.com</b> ou appelez le <b style="color:var(--green)">02 32 38 07 51</b> : nos pépiniéristes vous le confirment après vérification des disponibilités.</p>
     <details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700">Voir le texte du devis</summary><textarea class="copy" id="qtext" readonly>${esc(quoteText())}</textarea></details>`:''}
   </div>
   <footer>${quote.length?`${SEND_KEY?`<button class="btn" id="send">Envoyer le devis à Fleurandie</button>`:''}${STANDALONE?`<a class="btn${SEND_KEY?' ghost':''}" style="text-align:center;text-decoration:none" href="mailto:contact@fleurandie.com?subject=${encodeURIComponent('Demande de devis – '+(info.soc||'paysagiste')+' – automne 2026')}&body=${encodeURIComponent(quoteText())}">${SEND_KEY?'Ou l\'envoyer depuis ma messagerie':'Envoyer le devis par e-mail à Fleurandie'}</a>`:''}<button class="btn ${STANDALONE?'ghost':''}" id="copy">Copier le devis${STANDALONE?'':" pour l'envoyer à contact@fleurandie.com"}</button>${STANDALONE?`<button class="btn ghost" id="print">Imprimer le devis</button>`:''}<button class="btn ghost" id="clear">Vider le devis</button>`:''}<button class="btn ghost" id="dclose">Continuer mes achats</button></footer></aside>`;
   const close=()=>{$('#dev').hidden=true};
   $('#ov').onclick=close; $('#dx').onclick=close; $('#dclose').onclick=close;
-  ['soc','mail','tel','ch','wk'].forEach(k=>$('#i-'+k).addEventListener('input',e=>{info[k]=e.target.value;saveQ();const ta=$('#qtext');if(ta)ta.value=quoteText()}));
+  ['soc','mail','tel','ch'].forEach(k=>$('#i-'+k).addEventListener('input',e=>{info[k]=e.target.value;saveQ();const ta=$('#qtext');if(ta)ta.value=quoteText()}));
   $('#dev').querySelectorAll('.ctl button').forEach(b=>b.onclick=()=>{const q=quote[+b.dataset.i];q.q=Math.max(1,q.q+ +b.dataset.d);saveQ();renderDrawer();updateCount()});
   $('#dev').querySelectorAll('.ctl input').forEach(i=>i.onchange=()=>{quote[+i.dataset.i].q=Math.max(1,parseInt(i.value,10)||1);saveQ();renderDrawer();updateCount()});
   $('#dev').querySelectorAll('.rm').forEach(b=>b.onclick=()=>{quote.splice(+b.dataset.rm,1);saveQ();renderDrawer();updateCount();if(state.view!=='home')render()});
@@ -364,7 +364,7 @@ async function sendQuote(){
   btn.disabled=true; btn.textContent='Envoi en cours…';
   const t=totals();
   const payload={access_key:SEND_KEY, subject:`Devis catalogue pro – ${soc} – ${fmt(t.ht)} HT`, from_name:soc, email:mail, replyto:mail,
-    entreprise:soc, telephone:info.tel||'', chantier:info.ch||'', livraison:info.wk||'', total_ht:fmt(t.ht), nb_lignes:String(quote.length), message:quoteText(), botcheck:''};
+    entreprise:soc, telephone:info.tel||'', chantier:info.ch||'', total_ht:fmt(t.ht), nb_lignes:String(quote.length), message:quoteText(), botcheck:''};
   try{
     const r=await fetch(SEND_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(payload)});
     const j=await r.json().catch(()=>({}));
@@ -374,9 +374,9 @@ async function sendQuote(){
   }catch(e){ btn.disabled=false; btn.textContent='Réessayer l\'envoi'; st.innerHTML='<div class="empty" style="color:var(--sale);padding:12px">L\'envoi n\'a pas abouti. Utilisez « Copier le devis » et collez-le dans un e-mail à contact@fleurandie.com, ou appelez le 02 32 38 07 51.</div>'; }
 }
 function quoteText(){
-  const t=totals(); const L=[`DEMANDE DE DEVIS – FLEURANDIE Pépinière & Jardinerie en Normandie – Catalogue pro automne 2026`,`À : contact@fleurandie.com – 1 Le Plant au Cure, 27190 Le Val-Doré – 02 32 38 07 51`,`Entreprise : ${info.soc||'…'}`,`E-mail : ${info.mail||'…'}`,`Téléphone : ${info.tel||'…'}`,`Chantier : ${info.ch||'…'}`,`Livraison souhaitée : ${info.wk||'…'}`,``,`Réf.          Qté   Désignation`];
+  const t=totals(); const L=[`DEMANDE DE DEVIS – FLEURANDIE Pépinière & Jardinerie en Normandie – Catalogue pro automne 2026`,`À : contact@fleurandie.com – 1 Le Plant au Cure, 27190 Le Val-Doré – 02 32 38 07 51`,`Entreprise : ${info.soc||'…'}`,`E-mail : ${info.mail||'…'}`,`Téléphone : ${info.tel||'…'}`,`Chantier : ${info.ch||'…'}`,``,`Réf.          Qté   Désignation`];
   for(const q of quote){ const u=unit(q.p,q.o,q.q); L.push(`${q.id}  ${String(q.q).padStart(3)}   ${titleCase(q.n)} – ${q.s} – ${fmt(u)} HT/u${q.o&&q.q>=q.o[0]?' (tarif par '+q.o[0]+')':''} = ${fmt(u*q.q)} HT`) }
-  L.push(``,`Total HT : ${fmt(t.ht)}`,`TVA 10 % : ${fmt(t.tva)}`,`Total TTC : ${fmt(t.ttc)}`,``,`Prix HT départ pépinière, hors transport, valables jusqu'au 31/12/2026 sous réserve de disponibilité.`);
+  L.push(``,`Total HT : ${fmt(t.ht)}`,`TVA 10 % : ${fmt(t.tva)}`,`Total TTC : ${fmt(t.ttc)}`,``,`Prix HT valables jusqu'au 31/12/2026 sous réserve de disponibilité.`);
   return L.join('\n');
 }
 $('#devbtn').addEventListener('click',openDrawer);
