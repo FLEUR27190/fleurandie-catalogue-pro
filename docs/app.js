@@ -337,7 +337,7 @@ function renderDrawer(){
   const t=totals();
   $('#dev').innerHTML=`<div class="ov" id="ov"></div><aside class="drawer" role="dialog" aria-label="Mon devis"><header><h2>Mon devis</h2><button class="x" id="dx" aria-label="Fermer">×</button></header>
   <div class="body">
-    <div class="info"><input id="i-soc" placeholder="Votre entreprise *" value="${esc(info.soc||'')}" autocomplete="organization"><input id="i-mail" type="email" placeholder="Votre e-mail *" value="${esc(info.mail||'')}" autocomplete="email"><input id="i-tel" type="tel" placeholder="Votre téléphone" value="${esc(info.tel||'')}" autocomplete="tel"><input id="i-ch" placeholder="Chantier / référence client" value="${esc(info.ch||'')}"></div><div id="sendstatus"></div>
+    <div class="info"><input id="i-soc" placeholder="Votre entreprise *" value="${esc(info.soc||'')}" autocomplete="organization"><input id="i-mail" type="email" placeholder="Votre e-mail *" value="${esc(info.mail||'')}" autocomplete="email"><input id="i-tel" type="tel" placeholder="Votre téléphone" value="${esc(info.tel||'')}" autocomplete="tel"><input id="i-ch" placeholder="Chantier / référence client" value="${esc(info.ch||'')}"><input id="i-wk" placeholder="Semaine souhaitée (ex. semaine 46)" value="${esc(info.wk||'')}"></div><div id="sendstatus"></div>
     ${quote.length?quote.map((q,i)=>`<div class="line"><div><div class="n">${esc(titleCase(q.n))}</div><div class="d">${esc(q.s)} · ${fmt(unit(q.p,q.o,q.q))} HT${q.o?(q.q>=q.o[0]?' <b style="color:var(--sale)">tarif par '+q.o[0]+' appliqué</b>':' · par '+q.o[0]+' : '+fmt(q.o[1])):''}</div></div><div class="ctl"><button data-i="${i}" data-d="-1" aria-label="Moins">−</button><input type="number" min="1" value="${q.q}" data-i="${i}" aria-label="Quantité"><button data-i="${i}" data-d="1" aria-label="Plus">+</button></div><button class="rm" data-rm="${i}">Retirer</button><div class="tot num">${fmt(unit(q.p,q.o,q.q)*q.q)}</div></div>`).join('')
     :`<div class="empty">Votre devis est vide. Dans chaque rayon, ouvrez une plante, choisissez la quantité et cliquez « Ajouter ».</div>`}
     ${quote.length?`<div class="totals"><div><span>Total HT</span><b class="num">${fmt(t.ht)}</b></div><div><span>TVA 10 %</span><span class="num">${fmt(t.tva)}</span></div><div class="ttc"><span>Total TTC</span><span class="num">${fmt(t.ttc)}</span></div></div>
@@ -347,7 +347,7 @@ function renderDrawer(){
   <footer>${quote.length?`${SEND_KEY?`<button class="btn" id="send">Envoyer le devis à Fleurandie</button>`:''}${STANDALONE?`<a class="btn${SEND_KEY?' ghost':''}" style="text-align:center;text-decoration:none" href="mailto:contact@fleurandie.com?subject=${encodeURIComponent('Demande de devis – '+(info.soc||'paysagiste')+' – automne 2026')}&body=${encodeURIComponent(quoteText())}">${SEND_KEY?'Ou l\'envoyer depuis ma messagerie':'Envoyer le devis par e-mail à Fleurandie'}</a>`:''}<button class="btn ${STANDALONE?'ghost':''}" id="copy">Copier le devis${STANDALONE?'':" pour l'envoyer à contact@fleurandie.com"}</button>${STANDALONE?`<button class="btn ghost" id="print">Imprimer le devis</button>`:''}<button class="btn ghost" id="clear">Vider le devis</button>`:''}<button class="btn ghost" id="dclose">Continuer mes achats</button></footer></aside>`;
   const close=()=>{$('#dev').hidden=true};
   $('#ov').onclick=close; $('#dx').onclick=close; $('#dclose').onclick=close;
-  ['soc','mail','tel','ch'].forEach(k=>$('#i-'+k).addEventListener('input',e=>{info[k]=e.target.value;saveQ();const ta=$('#qtext');if(ta)ta.value=quoteText()}));
+  ['soc','mail','tel','ch','wk'].forEach(k=>$('#i-'+k).addEventListener('input',e=>{info[k]=e.target.value;saveQ();const ta=$('#qtext');if(ta)ta.value=quoteText()}));
   $('#dev').querySelectorAll('.ctl button').forEach(b=>b.onclick=()=>{const q=quote[+b.dataset.i];q.q=Math.max(1,q.q+ +b.dataset.d);saveQ();renderDrawer();updateCount()});
   $('#dev').querySelectorAll('.ctl input').forEach(i=>i.onchange=()=>{quote[+i.dataset.i].q=Math.max(1,parseInt(i.value,10)||1);saveQ();renderDrawer();updateCount()});
   $('#dev').querySelectorAll('.rm').forEach(b=>b.onclick=()=>{quote.splice(+b.dataset.rm,1);saveQ();renderDrawer();updateCount();if(state.view!=='home')render()});
@@ -364,7 +364,7 @@ async function sendQuote(){
   btn.disabled=true; btn.textContent='Envoi en cours…';
   const t=totals();
   const payload={access_key:SEND_KEY, subject:`Devis catalogue pro – ${soc} – ${fmt(t.ht)} HT`, from_name:soc, email:mail, replyto:mail,
-    entreprise:soc, telephone:info.tel||'', chantier:info.ch||'', total_ht:fmt(t.ht), nb_lignes:String(quote.length), message:quoteText(), botcheck:''};
+    entreprise:soc, telephone:info.tel||'', chantier:info.ch||'', semaine_souhaitee:info.wk||'', total_ht:fmt(t.ht), nb_lignes:String(quote.length), message:quoteText(), botcheck:''};
   try{
     const r=await fetch(SEND_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(payload)});
     const j=await r.json().catch(()=>({}));
@@ -374,7 +374,7 @@ async function sendQuote(){
   }catch(e){ btn.disabled=false; btn.textContent='Réessayer l\'envoi'; st.innerHTML='<div class="empty" style="color:var(--sale);padding:12px">L\'envoi n\'a pas abouti. Utilisez « Copier le devis » et collez-le dans un e-mail à contact@fleurandie.com, ou appelez le 02 32 38 07 51.</div>'; }
 }
 function quoteText(){
-  const t=totals(); const L=[`DEMANDE DE DEVIS – FLEURANDIE Pépinière & Jardinerie en Normandie – Catalogue pro automne 2026`,`À : contact@fleurandie.com – 1 Le Plant au Cure, 27190 Le Val-Doré – 02 32 38 07 51`,`Entreprise : ${info.soc||'…'}`,`E-mail : ${info.mail||'…'}`,`Téléphone : ${info.tel||'…'}`,`Chantier : ${info.ch||'…'}`,``,`Réf.          Qté   Désignation`];
+  const t=totals(); const L=[`DEMANDE DE DEVIS – FLEURANDIE Pépinière & Jardinerie en Normandie – Catalogue pro automne 2026`,`À : contact@fleurandie.com – 1 Le Plant au Cure, 27190 Le Val-Doré – 02 32 38 07 51`,`Entreprise : ${info.soc||'…'}`,`E-mail : ${info.mail||'…'}`,`Téléphone : ${info.tel||'…'}`,`Chantier : ${info.ch||'…'}`,`Semaine souhaitée : ${info.wk||'…'}`,``,`Réf.          Qté   Désignation`];
   for(const q of quote){ const u=unit(q.p,q.o,q.q); L.push(`${q.id}  ${String(q.q).padStart(3)}   ${titleCase(q.n)} – ${q.s} – ${fmt(u)} HT/u${q.o&&q.q>=q.o[0]?' (tarif par '+q.o[0]+')':''} = ${fmt(u*q.q)} HT`) }
   L.push(``,`Total HT : ${fmt(t.ht)}`,`TVA 10 % : ${fmt(t.tva)}`,`Total TTC : ${fmt(t.ttc)}`,``,`Prix HT valables jusqu'au 31/12/2026 sous réserve de disponibilité.`);
   return L.join('\n');
