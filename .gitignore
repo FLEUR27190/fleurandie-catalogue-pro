@@ -1,0 +1,8 @@
+sources/
+sendkey.txt
+build/items.json
+build/paq.json
+build/paq.txt
+build/data.js
+build/artifact.html
+__pycache__/
